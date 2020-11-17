@@ -1,17 +1,18 @@
 import React, {Component} from "react";
 
 class TopNav extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            notes: {
-                id:'',
-                date:'',
-                content: ''
-            },
-            str: 0
+        constructor(props) {
+            super(props);
+            this.state = {
+                notes: [{
+                    id:'',
+                    date:'',
+                    content: '',
+                    stt: 0
+                }],
+                str: 0
+            }
         }
-    }
 
     componentWillMount() {
         if (localStorage && localStorage.getItem('notes')) {
@@ -22,13 +23,13 @@ class TopNav extends Component {
         }
     }
 
-    componentDidMount() {
-        let check = window.localStorage.getItem('notes');
-        check = JSON.parse(check);
-        if (Array.isArray(check) && check.length > 0) {
-            this.setState({ notes: check });
-        }
-    }
+    // componentDidMount() {
+    //     let check = window.localStorage.getItem('notes');
+    //     check = JSON.parse(check);
+    //     if (Array.isArray(check) && check.length > 0) {
+    //         this.setState({ notes: check });
+    //     }
+    // }
 
     s4() {
         return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
@@ -122,16 +123,22 @@ class TopNav extends Component {
     //     localStorage.setItem("notes", JSON.stringify(notes));
     // };
 
+    // onNext = () => {
+    //     this.setState({
+    //         str: this.state.str + 1
+    //     });
+    // }
+
     onNext = () => {
         this.setState({
-            str: this.state.str + 1
+            str: this.state.str + 1,
         })
     }
 
     onPrevious = () => {
         this.setState({
             str: this.state.str - 1
-        })
+        });
     }
 
     onChange = (event) => {
@@ -145,34 +152,76 @@ class TopNav extends Component {
 
     onSubmit = (event) => {
         event.preventDefault();
-        console.log(this.state.notes);
-        this.props.onSubmit(this.state.notes);
+        let arr = [ ];
+        let length = JSON.parse(localStorage.getItem('notes'))
+        let stt = 0;
+        if (length === null){
+            arr.push({
+                id: this.generateID(),
+                content:this.state.content,
+                date:this.state.date,
+                stt : 0
+            });
+            this.setState({
+                arr: this.state.notes.concat(arr)
+            });
+            localStorage.setItem("notes",JSON.stringify(arr));
+        } else {
+            let
+            note = JSON.parse(localStorage.getItem('notes'));
+            note.push({
+                id: this.generateID(),
+                content:this.state.content,
+                date:this.state.date,
+                stt : length.length + stt
+            });
+            this.setState({
+                note: this.state.notes.concat(note)
+            });
+            localStorage.setItem('notes', JSON.stringify(note));
+        }
     }
 
     render() {
         let date = new Date();
         const {notes, str} = this.state;
         console.log(`${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`);
-        let elmNotes = notes.filter(note => note.date === `${date.getDate() + str}/${date.getMonth() + 1}/${date.getFullYear()}`).map((note) => {
+        // let elmNotes = notes.filter(note => note.date === `${date.getDate() + str}/${date.getMonth() + 1}/${date.getFullYear()}`).map((note) => {
+        let intValue = false;
+        let preValue = false;
+        if (Number(str) === notes.length - 1){
+            intValue = true;
+        } else if ( Number(str) === 0){
+            preValue = true;
+        } else {
+            intValue = false;
+            preValue = false;
+        }
+        let elmNotes = notes.filter(note => note.stt === Number(str)).map((note) => {
             return <span className="text-sm-left ">
                 <ul key={note.id}>
                 <li>{note.content}</li>
             </ul>
             </span>
         })
+
+        let elmDate = notes.find(note => note.stt === Number(str));
+
         return (
             <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
                 <button className="btn btn-default col-3 mr-85 mt-3"
                         onClick={this.onPrevious}
+                        disabled={preValue}
                 >
                     Previous
                 </button>
                 <button className="btn btn-default col-3 mr-85 mt-3">
                     {
-                        `${date.getDate() + str}/${date.getMonth() + 1}/${date.getFullYear()}`
+                        elmDate.date
                     }
                 </button>
-                <button className="btn btn-default col-3 mt-3"
+                <button className="btn btn-default col-3 mt-3 "
+                        disabled={intValue}
                         onClick={this.onNext}
                 >
                     Next
@@ -184,7 +233,7 @@ class TopNav extends Component {
                         <input type="text"
                                className="form-control"
                                name="date"
-                               value={this.state.notes.date}
+                               value={this.state.date}
                                onChange={this.onChange}
                         />
                     </div>
@@ -193,7 +242,7 @@ class TopNav extends Component {
                         <input type="text"
                                className="form-control"
                                name="content"
-                               value={this.state.notes.content}
+                               value={this.state.content}
                                onChange={this.onChange}
                         />
                     </div>
