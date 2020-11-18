@@ -23,13 +23,13 @@ class TopNav extends Component {
         }
     }
 
-    // componentDidMount() {
-    //     let check = window.localStorage.getItem('notes');
-    //     check = JSON.parse(check);
-    //     if (Array.isArray(check) && check.length > 0) {
-    //         this.setState({ notes: check });
-    //     }
-    // }
+    componentDidMount() {
+        let check = window.localStorage.getItem('notes');
+        check = JSON.parse(check);
+        if (Array.isArray(check) && check.length > 0) {
+            this.setState({ notes: check });
+        }
+    }
 
     s4() {
         return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
@@ -123,12 +123,6 @@ class TopNav extends Component {
     //     localStorage.setItem("notes", JSON.stringify(notes));
     // };
 
-    // onNext = () => {
-    //     this.setState({
-    //         str: this.state.str + 1
-    //     });
-    // }
-
     onNext = () => {
         this.setState({
             str: this.state.str + 1,
@@ -162,13 +156,12 @@ class TopNav extends Component {
                 date:this.state.date,
                 stt : 0
             });
-            this.setState({
-                arr: this.state.notes.concat(arr)
-            });
+            // this.setState({
+            //     arr: this.state.notes.concat(arr)
+            // });
             localStorage.setItem("notes",JSON.stringify(arr));
         } else {
-            let
-            note = JSON.parse(localStorage.getItem('notes'));
+            let note = JSON.parse(localStorage.getItem('notes'));
             note.push({
                 id: this.generateID(),
                 content:this.state.content,
@@ -185,7 +178,7 @@ class TopNav extends Component {
     render() {
         let date = new Date();
         const {notes, str} = this.state;
-        console.log(`${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`);
+
         // let elmNotes = notes.filter(note => note.date === `${date.getDate() + str}/${date.getMonth() + 1}/${date.getFullYear()}`).map((note) => {
         let intValue = false;
         let preValue = false;
@@ -197,9 +190,11 @@ class TopNav extends Component {
             intValue = false;
             preValue = false;
         }
+
+        console.log(`${date.getFullYear()}/${date.getMonth()}/${date.getDate()}`)
         // let elmDate = notes.find(note => note.stt === Number(str));
         let elmDate = notes.find(note => note.stt === Number(str));
-
+        console.log(elmDate)
         let elmNotes = notes.filter(note => note.date === elmDate.date).map((note) => {
             return <span className="text-sm-left ">
                 <ul key={note.id}>
@@ -231,7 +226,7 @@ class TopNav extends Component {
                 <form onSubmit={this.onSubmit}>
                     <div className="form-group">
                         <label>Date: </label>
-                        <input type="text"
+                        <input type="date"
                                className="form-control"
                                name="date"
                                value={this.state.date}
@@ -247,10 +242,12 @@ class TopNav extends Component {
                                onChange={this.onChange}
                         />
                     </div>
-
-                    <button type="submit" className="btn btn-warning">
-                        <span className="fa fa-plus mr-5"></span>Luu
-                    </button>
+                    <div className="text-center">
+                        <button type="submit" className="btn btn-warning ">
+                            <span className="fa fa-plus mr-2 "></span>
+                            <span className="text-center">Submit</span>
+                        </button>
+                    </div>
                 </form>
 
                 <div className="m-30 bg-white">
