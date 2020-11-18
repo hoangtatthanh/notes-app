@@ -197,15 +197,16 @@ class TopNav extends Component {
             intValue = false;
             preValue = false;
         }
-        let elmNotes = notes.filter(note => note.stt === Number(str)).map((note) => {
+        // let elmDate = notes.find(note => note.stt === Number(str));
+        let elmDate = notes.find(note => note.stt === Number(str));
+
+        let elmNotes = notes.filter(note => note.date === elmDate.date).map((note) => {
             return <span className="text-sm-left ">
                 <ul key={note.id}>
                 <li>{note.content}</li>
             </ul>
             </span>
         })
-
-        let elmDate = notes.find(note => note.stt === Number(str));
 
         return (
             <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12">
